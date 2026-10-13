@@ -1,1 +1,99 @@
+import pandas as P
+import numpy as N
+import warnings
 
+from sklearn.model_selection import train_test_split as tts
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, r2_score, confusion_matrix, accuracy_score
+
+# Import CSV file
+df = P.read_csv("gold_prices.csv")
+
+print("First 10 Records:")
+print(df.head(10))
+
+# Check missing values
+print("Missing Values:")
+print(df.isnull().sum())
+
+# Filling missing numerical values with their mean
+df["USD_INR"] = df["USD_INR"].fillna(df["USD_INR"].mean())
+df["Inflation"] = df["Inflation"].fillna(df["Inflation"].mean())
+df["Interest_Rate"] = df["Interest_Rate"].fillna(df["Interest_Rate"].mean())
+df["Gold_Price"] = df["Gold_Price"].fillna(df["Gold_Price"].mean())
+
+print("Data after filling missing values:")
+print(df.head())
+
+# Input and output
+x = df[["USD_INR", "Inflation", "Interest_Rate"]]
+y = df["Gold_Price"]
+
+# Split data into training and testing data
+xtrain, xtest, ytrain, ytest = tts(
+    x, y, test_size=0.3, random_state=70
+)
+
+# Create Linear Regression model
+model = LinearRegression()
+
+# Train the model
+model.fit(xtrain, ytrain)
+
+# Predict gold prices
+ypred = model.predict(xtest)
+
+print("Actual Gold Prices:")
+print(ytest.head(10))
+
+print("Predicted Gold Prices:")
+print(ypred[:10])
+
+# Calculate error
+error = mean_absolute_error(ytest, ypred)
+
+print("Mean Absolute Error:", error)
+
+# Take user input
+print("Gold Price Prediction")
+
+usd = float(input("Enter USD to INR value: "))
+inflation = float(input("Enter inflation rate: "))
+interest = float(input("Enter interest rate: "))
+
+prediction = model.predict([[usd, inflation, interest]])
+
+print("Predicted Gold Price:", round(prediction[0], 2))
+
+warnings.filterwarnings('ignore', category=UserWarning)
+
+# Confusion Matrix
+
+
+
+q1 = ytrain.quantile(1/3)
+q2 = ytrain.quantile(2/3)
+
+actual = P.cut(ytest, [-N.inf, q1, q2, N.inf], labels=[0, 1, 2])
+predicted = P.cut(ypred, [-N.inf, q1, q2, N.inf], labels=[0, 1, 2])
+
+print("Confusion Matrix:")
+print(confusion_matrix(actual, predicted, labels=[0, 1, 2]))
+
+print("Category Accuracy:",
+      round(accuracy_score(actual, predicted) * 100, 2), "%")
+
+# Model accuracy and loss
+error = mean_absolute_error(ytest, ypred)
+accuracy = r2_score(ytest, ypred) * 100
+
+print("Model Loss (MAE):", round(error, 2))
+print("Model Accuracy (R2):", round(accuracy, 2), "%")
+
+# Actual and predicted results
+print("Actual vs Predicted:")
+print(P.DataFrame({
+    "Actual": ytest.values[:10],
+    "Predicted": N.round(ypred[:10], 2)
+}))
