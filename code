@@ -8,6 +8,7 @@ from sklearn.metrics import mean_absolute_error, r2_score, confusion_matrix, acc
 # Import CSV file
 df = P.read_csv("combined_file_with_real_columns.csv")
 
+#printing first 10 records
 print("First 10 Records:")
 print(df.head(10))
 
