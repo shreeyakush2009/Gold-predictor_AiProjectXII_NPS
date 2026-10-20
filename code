@@ -65,11 +65,7 @@ prediction = model.predict([[usd, inflation, interest]])
 
 print("Predicted Gold Price:", round(prediction[0], 2))
 
-warnings.filterwarnings('ignore', category=UserWarning)
-
 # Confusion Matrix
-
-
 
 q1 = ytrain.quantile(1/3)
 q2 = ytrain.quantile(2/3)
