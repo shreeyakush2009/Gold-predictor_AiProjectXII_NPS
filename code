@@ -80,10 +80,8 @@ print("Category Accuracy:",
       round(accuracy_score(actual, predicted) * 100, 2), "%")
 
 # Model accuracy and loss
-error = mean_absolute_error(ytest, ypred)
-accuracy = r2_score(ytest, ypred) * 100
 
-print("Model Loss (MAE):", round(error, 2))
+accuracy = r2_score(ytest, ypred) * 100
 print("Model Accuracy (R2):", round(accuracy, 2), "%")
 
 # Actual and predicted results
